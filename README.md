@@ -29,12 +29,13 @@ una_inj.py takes following arguments
 
 ### COCO Experiments
 
-1. download cocodata
-우선 coco dataset 이나 pascal voc를 다운 받아라. 여기서 받으면 편하다.
-https://cocodataset.org/#home
+1. **Download COCO dataset**
 
+First, you need to download the COCO dataset from the official website. You can obtain it from the [official COCO website](https://cocodataset.org/#home). Or you can use the [linked script](https://gist.github.com/mkocabas/a6177fc00315403d31572e17700d7fd9) for convenience.
 
-2. 아래의 스크립트로 UNA dataset을 생성해라.
+2. **Generate UNA dataset**
+
+You can use una_inj.sh to generate the UNA dataset. Please refer to the provided argument explanations above and make the necessary modifications.
 
 ~~~bash
 git clone https://github.com/Ryoo72/UNA.git
@@ -42,10 +43,11 @@ cd UNA
 bash una_inj.sh
 ~~~
 
+3. **Experiment**
 
-3. mmdetection이나 detectron을 이용해서 당신의 실험을 enjoy해라.
+Enjoy your experiments using [MMDetection](https://github.com/open-mmlab/mmdetection), [Detectron](https://github.com/facebookresearch/detectron2), or your own framework. You need to modify the config file according to your situation.
 
-## PASCAL VOC로 실험하기
+### PASCAL VOC Experiments
 
 1. download dataset
 여기서 받아라.
