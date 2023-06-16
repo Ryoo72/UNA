@@ -1,3 +1,8 @@
+<p align="center">
+ <img width="80%" src="./figures/UNA_logo.png"/>
+</p>
+
+
 # UNA
 This repository contains the code for generating **U**niversal-**N**oise **A**nnotation (UNA), which is a more practical setting that encompasses all types of noise that can occur in object detection. Additionally, experiment configuration files, log files, and links to download pre-trained weights are included.
 
@@ -5,6 +10,11 @@ You can use this code to simulate various types of noise and evaluate the perfor
 
 # ⚡️ Quick Start
 
+~~~bash
+git clone https://github.com/Ryoo72/UNA.git
+cd UNA
+bash una_inj.sh
+~~~
 
 # 📄 License
 
