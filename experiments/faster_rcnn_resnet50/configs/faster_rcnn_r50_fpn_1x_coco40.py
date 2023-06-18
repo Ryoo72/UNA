@@ -1,20 +1,18 @@
 model = dict(
     type='FasterRCNN',
     backbone=dict(
-        type='mmcls.ConvNeXt',
-        arch='tiny',
-        out_indices=[0, 1, 2, 3],
-        drop_path_rate=0.4,
-        layer_scale_init_value=1.0,
-        gap_before_final_norm=False,
-        init_cfg=dict(
-            type='Pretrained',
-            checkpoint=
-            'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth',
-            prefix='backbone.')),
+        type='ResNet',
+        depth=50,
+        num_stages=4,
+        out_indices=(0, 1, 2, 3),
+        frozen_stages=1,
+        norm_cfg=dict(type='BN', requires_grad=True),
+        norm_eval=True,
+        style='pytorch',
+        init_cfg=dict(type='Pretrained', checkpoint='torchvision://resnet50')),
     neck=dict(
         type='FPN',
-        in_channels=[96, 192, 384, 768],
+        in_channels=[256, 512, 1024, 2048],
         out_channels=256,
         num_outs=5),
     rpn_head=dict(
@@ -109,45 +107,9 @@ img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='LoadAnnotations', with_bbox=True, with_mask=False),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
     dict(type='RandomFlip', flip_ratio=0.5),
-    dict(
-        type='AutoAugment',
-        policies=[[{
-            'type':
-            'Resize',
-            'img_scale': [(480, 1333), (512, 1333), (544, 1333), (576, 1333),
-                          (608, 1333), (640, 1333), (672, 1333), (704, 1333),
-                          (736, 1333), (768, 1333), (800, 1333)],
-            'multiscale_mode':
-            'value',
-            'keep_ratio':
-            True
-        }],
-                  [{
-                      'type': 'Resize',
-                      'img_scale': [(400, 1333), (500, 1333), (600, 1333)],
-                      'multiscale_mode': 'value',
-                      'keep_ratio': True
-                  }, {
-                      'type': 'RandomCrop',
-                      'crop_type': 'absolute_range',
-                      'crop_size': (384, 600),
-                      'allow_negative_crop': True
-                  }, {
-                      'type':
-                      'Resize',
-                      'img_scale': [(480, 1333), (512, 1333), (544, 1333),
-                                    (576, 1333), (608, 1333), (640, 1333),
-                                    (672, 1333), (704, 1333), (736, 1333),
-                                    (768, 1333), (800, 1333)],
-                      'multiscale_mode':
-                      'value',
-                      'override':
-                      True,
-                      'keep_ratio':
-                      True
-                  }]]),
     dict(
         type='Normalize',
         mean=[123.675, 116.28, 103.53],
@@ -181,53 +143,14 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type='CocoDataset',
-        ann_file='data/coco/annotations/instances_train2017.json',
+        ann_file=
+        '/home/ubuntu/workspace/mmdetection/noise_controller/newmixnoisy40key_instances_train2017.json',
         img_prefix='data/coco/train2017/',
         pipeline=[
             dict(type='LoadImageFromFile'),
-            dict(type='LoadAnnotations', with_bbox=True, with_mask=False),
+            dict(type='LoadAnnotations', with_bbox=True),
+            dict(type='Resize', img_scale=(1333, 800), keep_ratio=True),
             dict(type='RandomFlip', flip_ratio=0.5),
-            dict(
-                type='AutoAugment',
-                policies=[[{
-                    'type':
-                    'Resize',
-                    'img_scale': [(480, 1333), (512, 1333), (544, 1333),
-                                  (576, 1333), (608, 1333), (640, 1333),
-                                  (672, 1333), (704, 1333), (736, 1333),
-                                  (768, 1333), (800, 1333)],
-                    'multiscale_mode':
-                    'value',
-                    'keep_ratio':
-                    True
-                }],
-                          [{
-                              'type': 'Resize',
-                              'img_scale': [(400, 1333), (500, 1333),
-                                            (600, 1333)],
-                              'multiscale_mode': 'value',
-                              'keep_ratio': True
-                          }, {
-                              'type': 'RandomCrop',
-                              'crop_type': 'absolute_range',
-                              'crop_size': (384, 600),
-                              'allow_negative_crop': True
-                          }, {
-                              'type':
-                              'Resize',
-                              'img_scale': [(480, 1333), (512, 1333),
-                                            (544, 1333), (576, 1333),
-                                            (608, 1333), (640, 1333),
-                                            (672, 1333), (704, 1333),
-                                            (736, 1333), (768, 1333),
-                                            (800, 1333)],
-                              'multiscale_mode':
-                              'value',
-                              'override':
-                              True,
-                              'keep_ratio':
-                              True
-                          }]]),
             dict(
                 type='Normalize',
                 mean=[123.675, 116.28, 103.53],
@@ -282,16 +205,9 @@ data = dict(
                     dict(type='ImageToTensor', keys=['img']),
                     dict(type='Collect', keys=['img'])
                 ])
-        ]),
-    persistent_workers=True)
+        ]))
 evaluation = dict(interval=1, metric='bbox')
-optimizer = dict(
-    constructor='LearningRateDecayOptimizerConstructor',
-    type='AdamW',
-    lr=0.0001,
-    betas=(0.9, 0.999),
-    weight_decay=0.05,
-    paramwise_cfg=dict(decay_rate=0.95, decay_type='layer_wise', num_layers=6))
+optimizer = dict(type='SGD', lr=0.02, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='step',
@@ -311,9 +227,6 @@ workflow = [('train', 1)]
 opencv_num_threads = 0
 mp_start_method = 'fork'
 auto_scale_lr = dict(enable=False, base_batch_size=16)
-custom_imports = dict(imports=['mmcls.models'], allow_failed_imports=False)
-checkpoint_file = 'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth'
-fp16 = dict(loss_scale=dict(init_scale=512))
-work_dir = './work_dirs/faster_rcnn_convnext-t_p4_w7_fpn_fp16_ms-crop_3x_coco'
+work_dir = './work_dirs/faster_rcnn_r50_fpn_1x_coco40'
 auto_resume = False
 gpu_ids = range(0, 8)
