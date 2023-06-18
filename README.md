@@ -5,7 +5,7 @@
 # UNA
 
 <p align="center">
- <img width="90%" src="./figures/MainFig.png"/>
+ <img width="100%" src="./figures/MainFig.png"/>
 </p>
 
 This repository contains the code for generating **U**niversal-**N**oise **A**nnotation (UNA), which is a more practical setting that encompasses all types of noise that can occur in object detection. Additionally, experiment configuration files, log files, and links to download pre-trained weights are included.
@@ -39,7 +39,7 @@ First, you need to download the COCO dataset from the official website. You can 
 
 2. **Generate UNA dataset**
 
-You can use una_inj.sh to generate the UNA dataset. Please refer to the provided argument explanations above and make the necessary modifications.
+You can use `una_inj.sh` to generate the UNA dataset. Please refer to the provided argument explanations above and make the necessary modifications.
 
 ~~~bash
 git clone https://github.com/Ryoo72/UNA.git
@@ -64,11 +64,11 @@ bash voc_download.sh
 
 2. **Format converting**
 
-To use una_inj.py, the dataset needs to be converted to COCO format. You can use the [script](https://github.com/open-mmlab/mmdetection/blob/main/tools/dataset_converters/pascal_voc.py) provided by mmdetection for the conversion.
+To use `una_inj.py`, the dataset needs to be converted to COCO format. You can use the [script](https://github.com/open-mmlab/mmdetection/blob/main/tools/dataset_converters/pascal_voc.py) provided by mmdetection for the conversion.
 
 3. **Generate UNA dataset**
 
-You can use una_inj.sh to generate the UNA dataset. Please refer to the provided argument explanations above and make the necessary modifications.
+You can use `una_inj.sh` to generate the UNA dataset. Please refer to the provided argument explanations above and make the necessary modifications.
 
 ~~~bash
 git clone https://github.com/Ryoo72/UNA.git
