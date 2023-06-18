@@ -2,15 +2,15 @@
  <img width="80%" src="./figures/UNA_logo.png"/>
 </p>
 
-
 # UNA
-This repository contains the code for generating **U**niversal-**N**oise **A**nnotation (UNA), which is a more practical setting that encompasses all types of noise that can occur in object detection. Additionally, experiment configuration files, log files, and links to download pre-trained weights are included.
-
-You can use this code to simulate various types of noise and evaluate the performance of object detection models under different noise settings. It provides a comprehensive framework for studying the impact of noise on object detection algorithms.
 
 <p align="center">
  <img width="90%" src="./figures/MainFig.png"/>
 </p>
+
+This repository contains the code for generating **U**niversal-**N**oise **A**nnotation (UNA), which is a more practical setting that encompasses all types of noise that can occur in object detection. Additionally, experiment configuration files, log files, and links to download pre-trained weights are included.
+
+You can use this code to simulate various types of noise and evaluate the performance of object detection models under different noise settings. It provides a comprehensive framework for studying the impact of noise on object detection algorithms.
 
 # ⚡️ Quick Start
 
@@ -53,23 +53,42 @@ Enjoy your experiments using [MMDetection](https://github.com/open-mmlab/mmdetec
 
 ### PASCAL VOC Experiments
 
-1. download dataset
-여기서 받아라.
+1. **Download PASCAL VOC dataset**
 
-2. COCO 형식으로 변환해라.
-변환 툴은 mmdetection에 있다.
+PASCAL VOC dataset can be downloaded from the [official website](http://host.robots.ox.ac.uk/pascal/VOC/) or [mirror websites](https://pjreddie.com/projects/pascal-voc-dataset-mirror/). Alternatively, you can use the 'voc_download.sh' script in the 'tools' directory.
 
-3. UNA 생성
+~~~bash
+cd tools
+bash voc_download.sh
+~~~
+
+2. **Format converting**
+
+To use una_inj.py, the dataset needs to be converted to COCO format. You can use the [script](https://github.com/open-mmlab/mmdetection/blob/main/tools/dataset_converters/pascal_voc.py) provided by mmdetection for the conversion.
+
+3. **Generate UNA dataset**
+
+You can use una_inj.sh to generate the UNA dataset. Please refer to the provided argument explanations above and make the necessary modifications.
+
 ~~~bash
 git clone https://github.com/Ryoo72/UNA.git
 cd UNA
-python una_inj.py --ratio 0.1 --class_type voc
-python una_inj.py --ratio 0.2 --class_type voc
-python una_inj.py --ratio 0.3 --class_type voc
-python una_inj.py --ratio 0.4 --class_type voc
+bash una_inj.sh voc
 ~~~
 
-4. mmdetection이나 detectron을 이용해서 당신의 실험을 enjoy해라. VOC포맷으로 다시 변경하고 싶다면, 이 레포를 참고해라.
+4. **Experiment**
+
+Enjoy your experiments using [MMDetection](https://github.com/open-mmlab/mmdetection), [Detectron](https://github.com/facebookresearch/detectron2), or your own framework. If you want to convert the annotation file back to PASCAL VOC format, please refer to the following commands.
+
+~~~bash
+$ git clone https://github.com/KapilM26/coco2VOC.git
+$ conda create --name voccoco python=3.8 -y
+$ conda activate voccoco
+$ cd coco2VOC
+$ pip install -r requirements.txt
+$ pip install --upgrade numpy
+~~~
+
 
 # 📊 Overview of Benchmark
 Experimental results for various types of detectors on the UNA setting.
