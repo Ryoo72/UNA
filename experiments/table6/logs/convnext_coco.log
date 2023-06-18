@@ -1,0 +1,1615 @@
+2023-06-06 06:12:27,173 - mmdet - INFO - Environment info:
+------------------------------------------------------------
+sys.platform: linux
+Python: 3.8.16 | packaged by conda-forge | (default, Feb  1 2023, 16:01:55) [GCC 11.3.0]
+CUDA available: True
+GPU 0,1,2,3,4,5,6,7: Tesla V100-SXM2-16GB
+CUDA_HOME: /usr/local/cuda
+NVCC: Cuda compilation tools, release 11.6, V11.6.55
+GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
+PyTorch: 1.13.1+cu116
+PyTorch compiling details: PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.6.0 (Git Hash 52b5f107dd9cf10910aaa19cb47f3abf9b349815)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.6
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.3.2  (built against CUDA 11.5)
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.6, CUDNN_VERSION=8.3.2, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.13.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+TorchVision: 0.14.1+cu116
+OpenCV: 4.7.0
+MMCV: 1.7.0
+MMCV Compiler: GCC 9.3
+MMCV CUDA Compiler: 11.6
+MMDetection: 2.28.2+e9cae2d
+------------------------------------------------------------
+
+2023-06-06 06:12:31,409 - mmdet - INFO - Distributed training: True
+2023-06-06 06:12:35,734 - mmdet - INFO - Config:
+model = dict(
+    type='FasterRCNN',
+    backbone=dict(
+        type='mmcls.ConvNeXt',
+        arch='tiny',
+        out_indices=[0, 1, 2, 3],
+        drop_path_rate=0.4,
+        layer_scale_init_value=1.0,
+        gap_before_final_norm=False,
+        init_cfg=dict(
+            type='Pretrained',
+            checkpoint=
+            'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth',
+            prefix='backbone.')),
+    neck=dict(
+        type='FPN',
+        in_channels=[96, 192, 384, 768],
+        out_channels=256,
+        num_outs=5),
+    rpn_head=dict(
+        type='RPNHead',
+        in_channels=256,
+        feat_channels=256,
+        anchor_generator=dict(
+            type='AnchorGenerator',
+            scales=[8],
+            ratios=[0.5, 1.0, 2.0],
+            strides=[4, 8, 16, 32, 64]),
+        bbox_coder=dict(
+            type='DeltaXYWHBBoxCoder',
+            target_means=[0.0, 0.0, 0.0, 0.0],
+            target_stds=[1.0, 1.0, 1.0, 1.0]),
+        loss_cls=dict(
+            type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
+        loss_bbox=dict(type='L1Loss', loss_weight=1.0)),
+    roi_head=dict(
+        type='StandardRoIHead',
+        bbox_roi_extractor=dict(
+            type='SingleRoIExtractor',
+            roi_layer=dict(type='RoIAlign', output_size=7, sampling_ratio=0),
+            out_channels=256,
+            featmap_strides=[4, 8, 16, 32]),
+        bbox_head=dict(
+            type='Shared2FCBBoxHead',
+            in_channels=256,
+            fc_out_channels=1024,
+            roi_feat_size=7,
+            num_classes=80,
+            bbox_coder=dict(
+                type='DeltaXYWHBBoxCoder',
+                target_means=[0.0, 0.0, 0.0, 0.0],
+                target_stds=[0.1, 0.1, 0.2, 0.2]),
+            reg_class_agnostic=False,
+            loss_cls=dict(
+                type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
+            loss_bbox=dict(type='L1Loss', loss_weight=1.0))),
+    train_cfg=dict(
+        rpn=dict(
+            assigner=dict(
+                type='MaxIoUAssigner',
+                pos_iou_thr=0.7,
+                neg_iou_thr=0.3,
+                min_pos_iou=0.3,
+                match_low_quality=True,
+                ignore_iof_thr=-1),
+            sampler=dict(
+                type='RandomSampler',
+                num=256,
+                pos_fraction=0.5,
+                neg_pos_ub=-1,
+                add_gt_as_proposals=False),
+            allowed_border=-1,
+            pos_weight=-1,
+            debug=False),
+        rpn_proposal=dict(
+            nms_pre=2000,
+            max_per_img=1000,
+            nms=dict(type='nms', iou_threshold=0.7),
+            min_bbox_size=0),
+        rcnn=dict(
+            assigner=dict(
+                type='MaxIoUAssigner',
+                pos_iou_thr=0.5,
+                neg_iou_thr=0.5,
+                min_pos_iou=0.5,
+                match_low_quality=False,
+                ignore_iof_thr=-1),
+            sampler=dict(
+                type='RandomSampler',
+                num=512,
+                pos_fraction=0.25,
+                neg_pos_ub=-1,
+                add_gt_as_proposals=True),
+            pos_weight=-1,
+            debug=False)),
+    test_cfg=dict(
+        rpn=dict(
+            nms_pre=1000,
+            max_per_img=1000,
+            nms=dict(type='nms', iou_threshold=0.7),
+            min_bbox_size=0),
+        rcnn=dict(
+            score_thr=0.05,
+            nms=dict(type='nms', iou_threshold=0.5),
+            max_per_img=100)))
+dataset_type = 'CocoDataset'
+data_root = 'data/coco/'
+img_norm_cfg = dict(
+    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+train_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
+    dict(type='RandomFlip', flip_ratio=0.5),
+    dict(
+        type='AutoAugment',
+        policies=[[{
+            'type':
+            'Resize',
+            'img_scale': [(480, 1333), (512, 1333), (544, 1333), (576, 1333),
+                          (608, 1333), (640, 1333), (672, 1333), (704, 1333),
+                          (736, 1333), (768, 1333), (800, 1333)],
+            'multiscale_mode':
+            'value',
+            'keep_ratio':
+            True
+        }],
+                  [{
+                      'type': 'Resize',
+                      'img_scale': [(400, 1333), (500, 1333), (600, 1333)],
+                      'multiscale_mode': 'value',
+                      'keep_ratio': True
+                  }, {
+                      'type': 'RandomCrop',
+                      'crop_type': 'absolute_range',
+                      'crop_size': (384, 600),
+                      'allow_negative_crop': True
+                  }, {
+                      'type':
+                      'Resize',
+                      'img_scale': [(480, 1333), (512, 1333), (544, 1333),
+                                    (576, 1333), (608, 1333), (640, 1333),
+                                    (672, 1333), (704, 1333), (736, 1333),
+                                    (768, 1333), (800, 1333)],
+                      'multiscale_mode':
+                      'value',
+                      'override':
+                      True,
+                      'keep_ratio':
+                      True
+                  }]]),
+    dict(
+        type='Normalize',
+        mean=[123.675, 116.28, 103.53],
+        std=[58.395, 57.12, 57.375],
+        to_rgb=True),
+    dict(type='Pad', size_divisor=32),
+    dict(type='DefaultFormatBundle'),
+    dict(type='Collect', keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks'])
+]
+test_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='MultiScaleFlipAug',
+        img_scale=(1333, 800),
+        flip=False,
+        transforms=[
+            dict(type='Resize', keep_ratio=True),
+            dict(type='RandomFlip'),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(type='ImageToTensor', keys=['img']),
+            dict(type='Collect', keys=['img'])
+        ])
+]
+data = dict(
+    samples_per_gpu=2,
+    workers_per_gpu=2,
+    train=dict(
+        type='CocoDataset',
+        ann_file='data/coco/annotations/instances_train2017.json',
+        img_prefix='data/coco/train2017/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(type='LoadAnnotations', with_bbox=True, with_mask=True),
+            dict(type='RandomFlip', flip_ratio=0.5),
+            dict(
+                type='AutoAugment',
+                policies=[[{
+                    'type':
+                    'Resize',
+                    'img_scale': [(480, 1333), (512, 1333), (544, 1333),
+                                  (576, 1333), (608, 1333), (640, 1333),
+                                  (672, 1333), (704, 1333), (736, 1333),
+                                  (768, 1333), (800, 1333)],
+                    'multiscale_mode':
+                    'value',
+                    'keep_ratio':
+                    True
+                }],
+                          [{
+                              'type': 'Resize',
+                              'img_scale': [(400, 1333), (500, 1333),
+                                            (600, 1333)],
+                              'multiscale_mode': 'value',
+                              'keep_ratio': True
+                          }, {
+                              'type': 'RandomCrop',
+                              'crop_type': 'absolute_range',
+                              'crop_size': (384, 600),
+                              'allow_negative_crop': True
+                          }, {
+                              'type':
+                              'Resize',
+                              'img_scale': [(480, 1333), (512, 1333),
+                                            (544, 1333), (576, 1333),
+                                            (608, 1333), (640, 1333),
+                                            (672, 1333), (704, 1333),
+                                            (736, 1333), (768, 1333),
+                                            (800, 1333)],
+                              'multiscale_mode':
+                              'value',
+                              'override':
+                              True,
+                              'keep_ratio':
+                              True
+                          }]]),
+            dict(
+                type='Normalize',
+                mean=[123.675, 116.28, 103.53],
+                std=[58.395, 57.12, 57.375],
+                to_rgb=True),
+            dict(type='Pad', size_divisor=32),
+            dict(type='DefaultFormatBundle'),
+            dict(
+                type='Collect',
+                keys=['img', 'gt_bboxes', 'gt_labels', 'gt_masks'])
+        ]),
+    val=dict(
+        type='CocoDataset',
+        ann_file='data/coco/annotations/instances_val2017.json',
+        img_prefix='data/coco/val2017/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1333, 800),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]),
+    test=dict(
+        type='CocoDataset',
+        ann_file='data/coco/annotations/instances_val2017.json',
+        img_prefix='data/coco/val2017/',
+        pipeline=[
+            dict(type='LoadImageFromFile'),
+            dict(
+                type='MultiScaleFlipAug',
+                img_scale=(1333, 800),
+                flip=False,
+                transforms=[
+                    dict(type='Resize', keep_ratio=True),
+                    dict(type='RandomFlip'),
+                    dict(
+                        type='Normalize',
+                        mean=[123.675, 116.28, 103.53],
+                        std=[58.395, 57.12, 57.375],
+                        to_rgb=True),
+                    dict(type='Pad', size_divisor=32),
+                    dict(type='ImageToTensor', keys=['img']),
+                    dict(type='Collect', keys=['img'])
+                ])
+        ]),
+    persistent_workers=True)
+evaluation = dict(interval=1, metric='bbox')
+optimizer = dict(
+    constructor='LearningRateDecayOptimizerConstructor',
+    type='AdamW',
+    lr=0.0001,
+    betas=(0.9, 0.999),
+    weight_decay=0.05,
+    paramwise_cfg=dict(decay_rate=0.95, decay_type='layer_wise', num_layers=6))
+optimizer_config = dict(grad_clip=None)
+lr_config = dict(
+    policy='step',
+    warmup='linear',
+    warmup_iters=1000,
+    warmup_ratio=0.001,
+    step=[27, 33])
+runner = dict(type='EpochBasedRunner', max_epochs=36)
+checkpoint_config = dict(interval=1)
+log_config = dict(interval=50, hooks=[dict(type='TextLoggerHook')])
+custom_hooks = [dict(type='NumClassCheckHook')]
+dist_params = dict(backend='nccl')
+log_level = 'INFO'
+load_from = None
+resume_from = None
+workflow = [('train', 1)]
+opencv_num_threads = 0
+mp_start_method = 'fork'
+auto_scale_lr = dict(enable=False, base_batch_size=16)
+custom_imports = dict(imports=['mmcls.models'], allow_failed_imports=False)
+checkpoint_file = 'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth'
+fp16 = dict(loss_scale=dict(init_scale=512))
+work_dir = './work_dirs/faster_rcnn_convnext-t_p4_w7_fpn_fp16_ms-crop_3x_coco'
+auto_resume = False
+gpu_ids = range(0, 8)
+
+2023-06-06 06:12:35,735 - mmdet - INFO - Set random seed to 0, deterministic: False
+2023-06-06 06:12:36,297 - mmdet - INFO - initialize ConvNeXt with init_cfg {'type': 'Pretrained', 'checkpoint': 'https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth', 'prefix': 'backbone.'}
+2023-06-06 06:12:41,730 - mmdet - INFO - initialize FPN with init_cfg {'type': 'Xavier', 'layer': 'Conv2d', 'distribution': 'uniform'}
+2023-06-06 06:12:41,756 - mmdet - INFO - initialize RPNHead with init_cfg {'type': 'Normal', 'layer': 'Conv2d', 'std': 0.01}
+2023-06-06 06:12:41,762 - mmdet - INFO - initialize Shared2FCBBoxHead with init_cfg [{'type': 'Normal', 'std': 0.01, 'override': {'name': 'fc_cls'}}, {'type': 'Normal', 'std': 0.001, 'override': {'name': 'fc_reg'}}, {'type': 'Xavier', 'distribution': 'uniform', 'override': [{'name': 'shared_fcs'}, {'name': 'cls_fcs'}, {'name': 'reg_fcs'}]}]
+Name of parameter - Initialization information
+
+backbone.downsample_layers.0.0.weight - torch.Size([96, 3, 4, 4]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.0.0.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.0.1.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.0.1.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.1.0.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.1.0.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.1.1.weight - torch.Size([192, 96, 2, 2]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.1.1.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.2.0.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.2.0.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.2.1.weight - torch.Size([384, 192, 2, 2]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.2.1.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.3.0.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.3.0.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.3.1.weight - torch.Size([768, 384, 2, 2]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.downsample_layers.3.1.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.gamma - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.depthwise_conv.weight - torch.Size([96, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.depthwise_conv.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.norm.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.norm.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.pointwise_conv1.weight - torch.Size([384, 96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.pointwise_conv1.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.pointwise_conv2.weight - torch.Size([96, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.0.pointwise_conv2.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.gamma - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.depthwise_conv.weight - torch.Size([96, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.depthwise_conv.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.norm.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.norm.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.pointwise_conv1.weight - torch.Size([384, 96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.pointwise_conv1.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.pointwise_conv2.weight - torch.Size([96, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.1.pointwise_conv2.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.gamma - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.depthwise_conv.weight - torch.Size([96, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.depthwise_conv.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.norm.weight - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.norm.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.pointwise_conv1.weight - torch.Size([384, 96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.pointwise_conv1.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.pointwise_conv2.weight - torch.Size([96, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.0.2.pointwise_conv2.bias - torch.Size([96]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.gamma - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.depthwise_conv.weight - torch.Size([192, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.depthwise_conv.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.norm.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.norm.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.pointwise_conv1.weight - torch.Size([768, 192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.pointwise_conv1.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.pointwise_conv2.weight - torch.Size([192, 768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.0.pointwise_conv2.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.gamma - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.depthwise_conv.weight - torch.Size([192, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.depthwise_conv.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.norm.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.norm.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.pointwise_conv1.weight - torch.Size([768, 192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.pointwise_conv1.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.pointwise_conv2.weight - torch.Size([192, 768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.1.pointwise_conv2.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.gamma - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.depthwise_conv.weight - torch.Size([192, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.depthwise_conv.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.norm.weight - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.norm.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.pointwise_conv1.weight - torch.Size([768, 192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.pointwise_conv1.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.pointwise_conv2.weight - torch.Size([192, 768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.1.2.pointwise_conv2.bias - torch.Size([192]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.0.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.1.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.2.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.3.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.4.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.5.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.6.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.7.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.gamma - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.depthwise_conv.weight - torch.Size([384, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.depthwise_conv.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.norm.weight - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.norm.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.pointwise_conv1.weight - torch.Size([1536, 384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.pointwise_conv1.bias - torch.Size([1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.pointwise_conv2.weight - torch.Size([384, 1536]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.2.8.pointwise_conv2.bias - torch.Size([384]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.gamma - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.depthwise_conv.weight - torch.Size([768, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.depthwise_conv.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.norm.weight - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.norm.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.pointwise_conv1.weight - torch.Size([3072, 768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.pointwise_conv1.bias - torch.Size([3072]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.pointwise_conv2.weight - torch.Size([768, 3072]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.0.pointwise_conv2.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.gamma - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.depthwise_conv.weight - torch.Size([768, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.depthwise_conv.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.norm.weight - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.norm.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.pointwise_conv1.weight - torch.Size([3072, 768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.pointwise_conv1.bias - torch.Size([3072]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.pointwise_conv2.weight - torch.Size([768, 3072]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.1.pointwise_conv2.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.gamma - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.depthwise_conv.weight - torch.Size([768, 1, 7, 7]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.depthwise_conv.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.norm.weight - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.norm.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.pointwise_conv1.weight - torch.Size([3072, 768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.pointwise_conv1.bias - torch.Size([3072]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.pointwise_conv2.weight - torch.Size([768, 3072]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.stages.3.2.pointwise_conv2.bias - torch.Size([768]): 
+PretrainedInit: load from https://download.openmmlab.com/mmclassification/v0/convnext/downstream/convnext-tiny_3rdparty_32xb128-noema_in1k_20220301-795e9634.pth 
+
+backbone.norm0.weight - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+backbone.norm0.bias - torch.Size([96]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+backbone.norm1.weight - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+backbone.norm1.bias - torch.Size([192]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+backbone.norm2.weight - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+backbone.norm2.bias - torch.Size([384]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+backbone.norm3.weight - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+backbone.norm3.bias - torch.Size([768]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.lateral_convs.0.conv.weight - torch.Size([256, 96, 1, 1]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.lateral_convs.0.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.lateral_convs.1.conv.weight - torch.Size([256, 192, 1, 1]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.lateral_convs.1.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.lateral_convs.2.conv.weight - torch.Size([256, 384, 1, 1]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.lateral_convs.2.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.lateral_convs.3.conv.weight - torch.Size([256, 768, 1, 1]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.lateral_convs.3.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.fpn_convs.0.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.fpn_convs.0.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.fpn_convs.1.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.fpn_convs.1.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.fpn_convs.2.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.fpn_convs.2.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+neck.fpn_convs.3.conv.weight - torch.Size([256, 256, 3, 3]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+neck.fpn_convs.3.conv.bias - torch.Size([256]): 
+The value is the same before and after calling `init_weights` of FasterRCNN  
+
+rpn_head.rpn_conv.weight - torch.Size([256, 256, 3, 3]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+rpn_head.rpn_conv.bias - torch.Size([256]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+rpn_head.rpn_cls.weight - torch.Size([3, 256, 1, 1]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+rpn_head.rpn_cls.bias - torch.Size([3]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+rpn_head.rpn_reg.weight - torch.Size([12, 256, 1, 1]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+rpn_head.rpn_reg.bias - torch.Size([12]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+roi_head.bbox_head.fc_cls.weight - torch.Size([81, 1024]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+roi_head.bbox_head.fc_cls.bias - torch.Size([81]): 
+NormalInit: mean=0, std=0.01, bias=0 
+
+roi_head.bbox_head.fc_reg.weight - torch.Size([320, 1024]): 
+NormalInit: mean=0, std=0.001, bias=0 
+
+roi_head.bbox_head.fc_reg.bias - torch.Size([320]): 
+NormalInit: mean=0, std=0.001, bias=0 
+
+roi_head.bbox_head.shared_fcs.0.weight - torch.Size([1024, 12544]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+roi_head.bbox_head.shared_fcs.0.bias - torch.Size([1024]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+roi_head.bbox_head.shared_fcs.1.weight - torch.Size([1024, 1024]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+
+roi_head.bbox_head.shared_fcs.1.bias - torch.Size([1024]): 
+XavierInit: gain=1, distribution=uniform, bias=0 
+2023-06-06 06:13:05,833 - mmdet - INFO - Automatic scaling of learning rate (LR) has been disabled.
+2023-06-06 06:13:05,834 - mmdet - INFO - self.paramwise_cfg is {'decay_rate': 0.95, 'decay_type': 'layer_wise', 'num_layers': 6}
+2023-06-06 06:13:05,834 - mmdet - INFO - Build LearningRateDecayOptimizerConstructor  layer_wise 0.95 - 8
+2023-06-06 06:13:05,834 - mmdet - INFO - set param backbone.downsample_layers.0.0.weight as id 0
+2023-06-06 06:13:05,834 - mmdet - INFO - set param backbone.downsample_layers.0.0.bias as id 0
+2023-06-06 06:13:05,834 - mmdet - INFO - set param backbone.downsample_layers.0.1.weight as id 0
+2023-06-06 06:13:05,834 - mmdet - INFO - set param backbone.downsample_layers.0.1.bias as id 0
+2023-06-06 06:13:05,834 - mmdet - INFO - set param backbone.downsample_layers.1.0.weight as id 2
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.1.0.bias as id 2
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.1.1.weight as id 2
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.1.1.bias as id 2
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.2.0.weight as id 3
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.2.0.bias as id 3
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.2.1.weight as id 3
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.2.1.bias as id 3
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.3.0.weight as id 6
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.3.0.bias as id 6
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.3.1.weight as id 6
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.downsample_layers.3.1.bias as id 6
+2023-06-06 06:13:05,835 - mmdet - INFO - set param backbone.stages.0.0.gamma as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.depthwise_conv.weight as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.depthwise_conv.bias as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.norm.weight as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.norm.bias as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.pointwise_conv1.weight as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.pointwise_conv1.bias as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.pointwise_conv2.weight as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.0.pointwise_conv2.bias as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.1.gamma as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.1.depthwise_conv.weight as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.1.depthwise_conv.bias as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.1.norm.weight as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.1.norm.bias as id 1
+2023-06-06 06:13:05,836 - mmdet - INFO - set param backbone.stages.0.1.pointwise_conv1.weight as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.1.pointwise_conv1.bias as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.1.pointwise_conv2.weight as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.1.pointwise_conv2.bias as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.gamma as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.depthwise_conv.weight as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.depthwise_conv.bias as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.norm.weight as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.norm.bias as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.pointwise_conv1.weight as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.pointwise_conv1.bias as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.pointwise_conv2.weight as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.0.2.pointwise_conv2.bias as id 1
+2023-06-06 06:13:05,837 - mmdet - INFO - set param backbone.stages.1.0.gamma as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.depthwise_conv.weight as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.depthwise_conv.bias as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.norm.weight as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.norm.bias as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.pointwise_conv1.weight as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.pointwise_conv1.bias as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.pointwise_conv2.weight as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.0.pointwise_conv2.bias as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.1.gamma as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.1.depthwise_conv.weight as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.1.depthwise_conv.bias as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.1.norm.weight as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.1.norm.bias as id 2
+2023-06-06 06:13:05,838 - mmdet - INFO - set param backbone.stages.1.1.pointwise_conv1.weight as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.1.pointwise_conv1.bias as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.1.pointwise_conv2.weight as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.1.pointwise_conv2.bias as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.gamma as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.depthwise_conv.weight as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.depthwise_conv.bias as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.norm.weight as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.norm.bias as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.pointwise_conv1.weight as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.pointwise_conv1.bias as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.pointwise_conv2.weight as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.1.2.pointwise_conv2.bias as id 2
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.2.0.gamma as id 3
+2023-06-06 06:13:05,839 - mmdet - INFO - set param backbone.stages.2.0.depthwise_conv.weight as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.0.depthwise_conv.bias as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.0.norm.weight as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.0.norm.bias as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.0.pointwise_conv1.weight as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.0.pointwise_conv1.bias as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.0.pointwise_conv2.weight as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.0.pointwise_conv2.bias as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.1.gamma as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.1.depthwise_conv.weight as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.1.depthwise_conv.bias as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.1.norm.weight as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.1.norm.bias as id 3
+2023-06-06 06:13:05,840 - mmdet - INFO - set param backbone.stages.2.1.pointwise_conv1.weight as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.1.pointwise_conv1.bias as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.1.pointwise_conv2.weight as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.1.pointwise_conv2.bias as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.gamma as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.depthwise_conv.weight as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.depthwise_conv.bias as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.norm.weight as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.norm.bias as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.pointwise_conv1.weight as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.pointwise_conv1.bias as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.pointwise_conv2.weight as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.2.pointwise_conv2.bias as id 3
+2023-06-06 06:13:05,841 - mmdet - INFO - set param backbone.stages.2.3.gamma as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.depthwise_conv.weight as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.depthwise_conv.bias as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.norm.weight as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.norm.bias as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.pointwise_conv1.weight as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.pointwise_conv1.bias as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.pointwise_conv2.weight as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.3.pointwise_conv2.bias as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.4.gamma as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.4.depthwise_conv.weight as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.4.depthwise_conv.bias as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.4.norm.weight as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.4.norm.bias as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.4.pointwise_conv1.weight as id 4
+2023-06-06 06:13:05,842 - mmdet - INFO - set param backbone.stages.2.4.pointwise_conv1.bias as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.4.pointwise_conv2.weight as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.4.pointwise_conv2.bias as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.gamma as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.depthwise_conv.weight as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.depthwise_conv.bias as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.norm.weight as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.norm.bias as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.pointwise_conv1.weight as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.pointwise_conv1.bias as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.pointwise_conv2.weight as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.5.pointwise_conv2.bias as id 4
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.6.gamma as id 5
+2023-06-06 06:13:05,843 - mmdet - INFO - set param backbone.stages.2.6.depthwise_conv.weight as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.6.depthwise_conv.bias as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.6.norm.weight as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.6.norm.bias as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.6.pointwise_conv1.weight as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.6.pointwise_conv1.bias as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.6.pointwise_conv2.weight as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.6.pointwise_conv2.bias as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.7.gamma as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.7.depthwise_conv.weight as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.7.depthwise_conv.bias as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.7.norm.weight as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.7.norm.bias as id 5
+2023-06-06 06:13:05,844 - mmdet - INFO - set param backbone.stages.2.7.pointwise_conv1.weight as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.7.pointwise_conv1.bias as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.7.pointwise_conv2.weight as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.7.pointwise_conv2.bias as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.gamma as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.depthwise_conv.weight as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.depthwise_conv.bias as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.norm.weight as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.norm.bias as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.pointwise_conv1.weight as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.pointwise_conv1.bias as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.pointwise_conv2.weight as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.2.8.pointwise_conv2.bias as id 5
+2023-06-06 06:13:05,845 - mmdet - INFO - set param backbone.stages.3.0.gamma as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.depthwise_conv.weight as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.depthwise_conv.bias as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.norm.weight as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.norm.bias as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.pointwise_conv1.weight as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.pointwise_conv1.bias as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.pointwise_conv2.weight as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.0.pointwise_conv2.bias as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.1.gamma as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.1.depthwise_conv.weight as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.1.depthwise_conv.bias as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.1.norm.weight as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.1.norm.bias as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.1.pointwise_conv1.weight as id 6
+2023-06-06 06:13:05,846 - mmdet - INFO - set param backbone.stages.3.1.pointwise_conv1.bias as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.1.pointwise_conv2.weight as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.1.pointwise_conv2.bias as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.gamma as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.depthwise_conv.weight as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.depthwise_conv.bias as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.norm.weight as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.norm.bias as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.pointwise_conv1.weight as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.pointwise_conv1.bias as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.pointwise_conv2.weight as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.stages.3.2.pointwise_conv2.bias as id 6
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.norm0.weight as id 7
+2023-06-06 06:13:05,847 - mmdet - INFO - set param backbone.norm0.bias as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param backbone.norm1.weight as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param backbone.norm1.bias as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param backbone.norm2.weight as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param backbone.norm2.bias as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param backbone.norm3.weight as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param backbone.norm3.bias as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.0.conv.weight as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.0.conv.bias as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.1.conv.weight as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.1.conv.bias as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.2.conv.weight as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.2.conv.bias as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.3.conv.weight as id 7
+2023-06-06 06:13:05,848 - mmdet - INFO - set param neck.lateral_convs.3.conv.bias as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.0.conv.weight as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.0.conv.bias as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.1.conv.weight as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.1.conv.bias as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.2.conv.weight as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.2.conv.bias as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.3.conv.weight as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param neck.fpn_convs.3.conv.bias as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param rpn_head.rpn_conv.weight as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param rpn_head.rpn_conv.bias as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param rpn_head.rpn_cls.weight as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param rpn_head.rpn_cls.bias as id 7
+2023-06-06 06:13:05,849 - mmdet - INFO - set param rpn_head.rpn_reg.weight as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param rpn_head.rpn_reg.bias as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.fc_cls.weight as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.fc_cls.bias as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.fc_reg.weight as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.fc_reg.bias as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.shared_fcs.0.weight as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.shared_fcs.0.bias as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.shared_fcs.1.weight as id 7
+2023-06-06 06:13:05,850 - mmdet - INFO - set param roi_head.bbox_head.shared_fcs.1.bias as id 7
+2023-06-06 06:13:05,851 - mmdet - INFO - Param groups = {
+  "layer_0_decay": {
+    "param_names": [
+      "backbone.downsample_layers.0.0.weight"
+    ],
+    "lr_scale": 0.6983372960937497,
+    "lr": 6.983372960937497e-05,
+    "weight_decay": 0.05
+  },
+  "layer_0_no_decay": {
+    "param_names": [
+      "backbone.downsample_layers.0.0.bias",
+      "backbone.downsample_layers.0.1.weight",
+      "backbone.downsample_layers.0.1.bias"
+    ],
+    "lr_scale": 0.6983372960937497,
+    "lr": 6.983372960937497e-05,
+    "weight_decay": 0.0
+  },
+  "layer_2_no_decay": {
+    "param_names": [
+      "backbone.downsample_layers.1.0.weight",
+      "backbone.downsample_layers.1.0.bias",
+      "backbone.downsample_layers.1.1.bias",
+      "backbone.stages.1.0.gamma",
+      "backbone.stages.1.0.depthwise_conv.bias",
+      "backbone.stages.1.0.norm.weight",
+      "backbone.stages.1.0.norm.bias",
+      "backbone.stages.1.0.pointwise_conv1.bias",
+      "backbone.stages.1.0.pointwise_conv2.bias",
+      "backbone.stages.1.1.gamma",
+      "backbone.stages.1.1.depthwise_conv.bias",
+      "backbone.stages.1.1.norm.weight",
+      "backbone.stages.1.1.norm.bias",
+      "backbone.stages.1.1.pointwise_conv1.bias",
+      "backbone.stages.1.1.pointwise_conv2.bias",
+      "backbone.stages.1.2.gamma",
+      "backbone.stages.1.2.depthwise_conv.bias",
+      "backbone.stages.1.2.norm.weight",
+      "backbone.stages.1.2.norm.bias",
+      "backbone.stages.1.2.pointwise_conv1.bias",
+      "backbone.stages.1.2.pointwise_conv2.bias"
+    ],
+    "lr_scale": 0.7737809374999998,
+    "lr": 7.737809374999998e-05,
+    "weight_decay": 0.0
+  },
+  "layer_2_decay": {
+    "param_names": [
+      "backbone.downsample_layers.1.1.weight",
+      "backbone.stages.1.0.depthwise_conv.weight",
+      "backbone.stages.1.0.pointwise_conv1.weight",
+      "backbone.stages.1.0.pointwise_conv2.weight",
+      "backbone.stages.1.1.depthwise_conv.weight",
+      "backbone.stages.1.1.pointwise_conv1.weight",
+      "backbone.stages.1.1.pointwise_conv2.weight",
+      "backbone.stages.1.2.depthwise_conv.weight",
+      "backbone.stages.1.2.pointwise_conv1.weight",
+      "backbone.stages.1.2.pointwise_conv2.weight"
+    ],
+    "lr_scale": 0.7737809374999998,
+    "lr": 7.737809374999998e-05,
+    "weight_decay": 0.05
+  },
+  "layer_3_no_decay": {
+    "param_names": [
+      "backbone.downsample_layers.2.0.weight",
+      "backbone.downsample_layers.2.0.bias",
+      "backbone.downsample_layers.2.1.bias",
+      "backbone.stages.2.0.gamma",
+      "backbone.stages.2.0.depthwise_conv.bias",
+      "backbone.stages.2.0.norm.weight",
+      "backbone.stages.2.0.norm.bias",
+      "backbone.stages.2.0.pointwise_conv1.bias",
+      "backbone.stages.2.0.pointwise_conv2.bias",
+      "backbone.stages.2.1.gamma",
+      "backbone.stages.2.1.depthwise_conv.bias",
+      "backbone.stages.2.1.norm.weight",
+      "backbone.stages.2.1.norm.bias",
+      "backbone.stages.2.1.pointwise_conv1.bias",
+      "backbone.stages.2.1.pointwise_conv2.bias",
+      "backbone.stages.2.2.gamma",
+      "backbone.stages.2.2.depthwise_conv.bias",
+      "backbone.stages.2.2.norm.weight",
+      "backbone.stages.2.2.norm.bias",
+      "backbone.stages.2.2.pointwise_conv1.bias",
+      "backbone.stages.2.2.pointwise_conv2.bias"
+    ],
+    "lr_scale": 0.8145062499999999,
+    "lr": 8.1450625e-05,
+    "weight_decay": 0.0
+  },
+  "layer_3_decay": {
+    "param_names": [
+      "backbone.downsample_layers.2.1.weight",
+      "backbone.stages.2.0.depthwise_conv.weight",
+      "backbone.stages.2.0.pointwise_conv1.weight",
+      "backbone.stages.2.0.pointwise_conv2.weight",
+      "backbone.stages.2.1.depthwise_conv.weight",
+      "backbone.stages.2.1.pointwise_conv1.weight",
+      "backbone.stages.2.1.pointwise_conv2.weight",
+      "backbone.stages.2.2.depthwise_conv.weight",
+      "backbone.stages.2.2.pointwise_conv1.weight",
+      "backbone.stages.2.2.pointwise_conv2.weight"
+    ],
+    "lr_scale": 0.8145062499999999,
+    "lr": 8.1450625e-05,
+    "weight_decay": 0.05
+  },
+  "layer_6_no_decay": {
+    "param_names": [
+      "backbone.downsample_layers.3.0.weight",
+      "backbone.downsample_layers.3.0.bias",
+      "backbone.downsample_layers.3.1.bias",
+      "backbone.stages.3.0.gamma",
+      "backbone.stages.3.0.depthwise_conv.bias",
+      "backbone.stages.3.0.norm.weight",
+      "backbone.stages.3.0.norm.bias",
+      "backbone.stages.3.0.pointwise_conv1.bias",
+      "backbone.stages.3.0.pointwise_conv2.bias",
+      "backbone.stages.3.1.gamma",
+      "backbone.stages.3.1.depthwise_conv.bias",
+      "backbone.stages.3.1.norm.weight",
+      "backbone.stages.3.1.norm.bias",
+      "backbone.stages.3.1.pointwise_conv1.bias",
+      "backbone.stages.3.1.pointwise_conv2.bias",
+      "backbone.stages.3.2.gamma",
+      "backbone.stages.3.2.depthwise_conv.bias",
+      "backbone.stages.3.2.norm.weight",
+      "backbone.stages.3.2.norm.bias",
+      "backbone.stages.3.2.pointwise_conv1.bias",
+      "backbone.stages.3.2.pointwise_conv2.bias"
+    ],
+    "lr_scale": 0.95,
+    "lr": 9.5e-05,
+    "weight_decay": 0.0
+  },
+  "layer_6_decay": {
+    "param_names": [
+      "backbone.downsample_layers.3.1.weight",
+      "backbone.stages.3.0.depthwise_conv.weight",
+      "backbone.stages.3.0.pointwise_conv1.weight",
+      "backbone.stages.3.0.pointwise_conv2.weight",
+      "backbone.stages.3.1.depthwise_conv.weight",
+      "backbone.stages.3.1.pointwise_conv1.weight",
+      "backbone.stages.3.1.pointwise_conv2.weight",
+      "backbone.stages.3.2.depthwise_conv.weight",
+      "backbone.stages.3.2.pointwise_conv1.weight",
+      "backbone.stages.3.2.pointwise_conv2.weight"
+    ],
+    "lr_scale": 0.95,
+    "lr": 9.5e-05,
+    "weight_decay": 0.05
+  },
+  "layer_1_no_decay": {
+    "param_names": [
+      "backbone.stages.0.0.gamma",
+      "backbone.stages.0.0.depthwise_conv.bias",
+      "backbone.stages.0.0.norm.weight",
+      "backbone.stages.0.0.norm.bias",
+      "backbone.stages.0.0.pointwise_conv1.bias",
+      "backbone.stages.0.0.pointwise_conv2.bias",
+      "backbone.stages.0.1.gamma",
+      "backbone.stages.0.1.depthwise_conv.bias",
+      "backbone.stages.0.1.norm.weight",
+      "backbone.stages.0.1.norm.bias",
+      "backbone.stages.0.1.pointwise_conv1.bias",
+      "backbone.stages.0.1.pointwise_conv2.bias",
+      "backbone.stages.0.2.gamma",
+      "backbone.stages.0.2.depthwise_conv.bias",
+      "backbone.stages.0.2.norm.weight",
+      "backbone.stages.0.2.norm.bias",
+      "backbone.stages.0.2.pointwise_conv1.bias",
+      "backbone.stages.0.2.pointwise_conv2.bias"
+    ],
+    "lr_scale": 0.7350918906249998,
+    "lr": 7.350918906249998e-05,
+    "weight_decay": 0.0
+  },
+  "layer_1_decay": {
+    "param_names": [
+      "backbone.stages.0.0.depthwise_conv.weight",
+      "backbone.stages.0.0.pointwise_conv1.weight",
+      "backbone.stages.0.0.pointwise_conv2.weight",
+      "backbone.stages.0.1.depthwise_conv.weight",
+      "backbone.stages.0.1.pointwise_conv1.weight",
+      "backbone.stages.0.1.pointwise_conv2.weight",
+      "backbone.stages.0.2.depthwise_conv.weight",
+      "backbone.stages.0.2.pointwise_conv1.weight",
+      "backbone.stages.0.2.pointwise_conv2.weight"
+    ],
+    "lr_scale": 0.7350918906249998,
+    "lr": 7.350918906249998e-05,
+    "weight_decay": 0.05
+  },
+  "layer_4_no_decay": {
+    "param_names": [
+      "backbone.stages.2.3.gamma",
+      "backbone.stages.2.3.depthwise_conv.bias",
+      "backbone.stages.2.3.norm.weight",
+      "backbone.stages.2.3.norm.bias",
+      "backbone.stages.2.3.pointwise_conv1.bias",
+      "backbone.stages.2.3.pointwise_conv2.bias",
+      "backbone.stages.2.4.gamma",
+      "backbone.stages.2.4.depthwise_conv.bias",
+      "backbone.stages.2.4.norm.weight",
+      "backbone.stages.2.4.norm.bias",
+      "backbone.stages.2.4.pointwise_conv1.bias",
+      "backbone.stages.2.4.pointwise_conv2.bias",
+      "backbone.stages.2.5.gamma",
+      "backbone.stages.2.5.depthwise_conv.bias",
+      "backbone.stages.2.5.norm.weight",
+      "backbone.stages.2.5.norm.bias",
+      "backbone.stages.2.5.pointwise_conv1.bias",
+      "backbone.stages.2.5.pointwise_conv2.bias"
+    ],
+    "lr_scale": 0.8573749999999999,
+    "lr": 8.573749999999999e-05,
+    "weight_decay": 0.0
+  },
+  "layer_4_decay": {
+    "param_names": [
+      "backbone.stages.2.3.depthwise_conv.weight",
+      "backbone.stages.2.3.pointwise_conv1.weight",
+      "backbone.stages.2.3.pointwise_conv2.weight",
+      "backbone.stages.2.4.depthwise_conv.weight",
+      "backbone.stages.2.4.pointwise_conv1.weight",
+      "backbone.stages.2.4.pointwise_conv2.weight",
+      "backbone.stages.2.5.depthwise_conv.weight",
+      "backbone.stages.2.5.pointwise_conv1.weight",
+      "backbone.stages.2.5.pointwise_conv2.weight"
+    ],
+    "lr_scale": 0.8573749999999999,
+    "lr": 8.573749999999999e-05,
+    "weight_decay": 0.05
+  },
+  "layer_5_no_decay": {
+    "param_names": [
+      "backbone.stages.2.6.gamma",
+      "backbone.stages.2.6.depthwise_conv.bias",
+      "backbone.stages.2.6.norm.weight",
+      "backbone.stages.2.6.norm.bias",
+      "backbone.stages.2.6.pointwise_conv1.bias",
+      "backbone.stages.2.6.pointwise_conv2.bias",
+      "backbone.stages.2.7.gamma",
+      "backbone.stages.2.7.depthwise_conv.bias",
+      "backbone.stages.2.7.norm.weight",
+      "backbone.stages.2.7.norm.bias",
+      "backbone.stages.2.7.pointwise_conv1.bias",
+      "backbone.stages.2.7.pointwise_conv2.bias",
+      "backbone.stages.2.8.gamma",
+      "backbone.stages.2.8.depthwise_conv.bias",
+      "backbone.stages.2.8.norm.weight",
+      "backbone.stages.2.8.norm.bias",
+      "backbone.stages.2.8.pointwise_conv1.bias",
+      "backbone.stages.2.8.pointwise_conv2.bias"
+    ],
+    "lr_scale": 0.9025,
+    "lr": 9.025e-05,
+    "weight_decay": 0.0
+  },
+  "layer_5_decay": {
+    "param_names": [
+      "backbone.stages.2.6.depthwise_conv.weight",
+      "backbone.stages.2.6.pointwise_conv1.weight",
+      "backbone.stages.2.6.pointwise_conv2.weight",
+      "backbone.stages.2.7.depthwise_conv.weight",
+      "backbone.stages.2.7.pointwise_conv1.weight",
+      "backbone.stages.2.7.pointwise_conv2.weight",
+      "backbone.stages.2.8.depthwise_conv.weight",
+      "backbone.stages.2.8.pointwise_conv1.weight",
+      "backbone.stages.2.8.pointwise_conv2.weight"
+    ],
+    "lr_scale": 0.9025,
+    "lr": 9.025e-05,
+    "weight_decay": 0.05
+  },
+  "layer_7_no_decay": {
+    "param_names": [
+      "backbone.norm0.weight",
+      "backbone.norm0.bias",
+      "backbone.norm1.weight",
+      "backbone.norm1.bias",
+      "backbone.norm2.weight",
+      "backbone.norm2.bias",
+      "backbone.norm3.weight",
+      "backbone.norm3.bias",
+      "neck.lateral_convs.0.conv.bias",
+      "neck.lateral_convs.1.conv.bias",
+      "neck.lateral_convs.2.conv.bias",
+      "neck.lateral_convs.3.conv.bias",
+      "neck.fpn_convs.0.conv.bias",
+      "neck.fpn_convs.1.conv.bias",
+      "neck.fpn_convs.2.conv.bias",
+      "neck.fpn_convs.3.conv.bias",
+      "rpn_head.rpn_conv.bias",
+      "rpn_head.rpn_cls.bias",
+      "rpn_head.rpn_reg.bias",
+      "roi_head.bbox_head.fc_cls.bias",
+      "roi_head.bbox_head.fc_reg.bias",
+      "roi_head.bbox_head.shared_fcs.0.bias",
+      "roi_head.bbox_head.shared_fcs.1.bias"
+    ],
+    "lr_scale": 1.0,
+    "lr": 0.0001,
+    "weight_decay": 0.0
+  },
+  "layer_7_decay": {
+    "param_names": [
+      "neck.lateral_convs.0.conv.weight",
+      "neck.lateral_convs.1.conv.weight",
+      "neck.lateral_convs.2.conv.weight",
+      "neck.lateral_convs.3.conv.weight",
+      "neck.fpn_convs.0.conv.weight",
+      "neck.fpn_convs.1.conv.weight",
+      "neck.fpn_convs.2.conv.weight",
+      "neck.fpn_convs.3.conv.weight",
+      "rpn_head.rpn_conv.weight",
+      "rpn_head.rpn_cls.weight",
+      "rpn_head.rpn_reg.weight",
+      "roi_head.bbox_head.fc_cls.weight",
+      "roi_head.bbox_head.fc_reg.weight",
+      "roi_head.bbox_head.shared_fcs.0.weight",
+      "roi_head.bbox_head.shared_fcs.1.weight"
+    ],
+    "lr_scale": 1.0,
+    "lr": 0.0001,
+    "weight_decay": 0.05
+  }
+}
+2023-06-06 06:13:06,580 - mmdet - INFO - Start running, host: ubuntu@ip-10-0-0-70, work_dir: /home/ubuntu/workspace/mmdetection/work_dirs/faster_rcnn_convnext-t_p4_w7_fpn_fp16_ms-crop_3x_coco
+2023-06-06 06:13:06,580 - mmdet - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) StepLrUpdaterHook                  
+(ABOVE_NORMAL) Fp16OptimizerHook                  
+(NORMAL      ) CheckpointHook                     
+(LOW         ) DistEvalHook                       
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) StepLrUpdaterHook                  
+(NORMAL      ) NumClassCheckHook                  
+(NORMAL      ) DistSamplerSeedHook                
+(LOW         ) IterTimerHook                      
+(LOW         ) DistEvalHook                       
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) StepLrUpdaterHook                  
+(LOW         ) IterTimerHook                      
+(LOW         ) DistEvalHook                       
+ -------------------- 
+after_train_iter:
+(ABOVE_NORMAL) Fp16OptimizerHook                  
+(NORMAL      ) CheckpointHook                     
+(LOW         ) IterTimerHook                      
+(LOW         ) DistEvalHook                       
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) CheckpointHook                     
+(LOW         ) DistEvalHook                       
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) NumClassCheckHook                  
+(NORMAL      ) DistSamplerSeedHook                
+(LOW         ) IterTimerHook                      
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+before_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(LOW         ) IterTimerHook                      
+ -------------------- 
+after_val_epoch:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+after_run:
+(VERY_LOW    ) TextLoggerHook                     
+ -------------------- 
+2023-06-06 06:13:06,581 - mmdet - INFO - workflow: [('train', 1)], max: 36 epochs
+2023-06-06 06:13:06,582 - mmdet - INFO - Checkpoints will be saved to /home/ubuntu/workspace/mmdetection/work_dirs/faster_rcnn_convnext-t_p4_w7_fpn_fp16_ms-crop_3x_coco by HardDiskBackend.
+2023-06-06 06:13:51,905 - mmdet - INFO - Epoch [1][50/7330]	lr: 3.488e-06, eta: 2 days, 18:24:47, time: 0.906, data_time: 0.091, memory: 4409, loss_rpn_cls: 0.6644, loss_rpn_bbox: 0.0848, loss_cls: 3.0546, acc: 55.3230, loss_bbox: 0.0270, loss: 3.8308
