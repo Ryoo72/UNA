@@ -90,13 +90,13 @@ $ pip install --upgrade numpy
 ~~~
 
 # 💾 Download UNA dataset
-We provide the download link for the UNA dataset that we used for the experiments.
+We provide the download link for the UNA dataset that we used for the experiments. The copyright of the annotations follow the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/legalcode) of the [MS COCO](https://cocodataset.org/#termsofuse) dataset.
 
 <center>
 
-|10%|20%|30%|40%|
-|---|---|---|---|
-|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EQWRCREDSypAjOYLjmOMJMoBdJmgm9x1DQ3ltm5so9ybgA)|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/ESicCOxq51hPhOK6vFBnv9wBJx50_nZb2YnM4grBxRw7Ww)|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EZYZ-uqKOwpEpiX_CUStoD0Bns4BnwttJmSUkfgbFgNd1Q)|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EenrvJTchYpDo_LwBfEhKu8BkwEAAVP6gfa3VE34A8zsvQ)|
+|10%|15%|20%|25%|30%|35%|40%|
+|---|---|---|---|---|---|---|
+|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EQWRCREDSypAjOYLjmOMJMoBdJmgm9x1DQ3ltm5so9ybgA)|[link]()|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/ESicCOxq51hPhOK6vFBnv9wBJx50_nZb2YnM4grBxRw7Ww)|[link]()|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EZYZ-uqKOwpEpiX_CUStoD0Bns4BnwttJmSUkfgbFgNd1Q)|[link]()|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EenrvJTchYpDo_LwBfEhKu8BkwEAAVP6gfa3VE34A8zsvQ)|
 
 </center>
 
