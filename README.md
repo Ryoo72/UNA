@@ -96,7 +96,7 @@ We provide the download link for the UNA dataset that we used for the experiment
 
 |10%|20%|30%|40%|
 |---|---|---|---|
-|[link]()|[link]()|[link]()|[link]()|
+|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EQWRCREDSypAjOYLjmOMJMoBdJmgm9x1DQ3ltm5so9ybgA)|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/ESicCOxq51hPhOK6vFBnv9wBJx50_nZb2YnM4grBxRw7Ww)|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EZYZ-uqKOwpEpiX_CUStoD0Bns4BnwttJmSUkfgbFgNd1Q)|[link](https://lgresearch-my.sharepoint.com/:u:/g/personal/kwangrok_ryoo_lgresearch_ai/EenrvJTchYpDo_LwBfEhKu8BkwEAAVP6gfa3VE34A8zsvQ)|
 
 </center>
 
