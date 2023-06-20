@@ -120,7 +120,8 @@ Experimental results for various types of detectors on the UNA setting.
 
 </center>
 
-For more detailed setup, please refer to the configuration file. For more benchmarks, including the results on PASCAL VOC, please refer to our paper.
+- For more detailed setup, please refer to the configuration file.
+- For more benchmarks, including the results on PASCAL VOC, please refer to our paper.
 
 # 📄 License
 
