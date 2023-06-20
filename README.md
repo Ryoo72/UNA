@@ -2,7 +2,7 @@
  <img width="80%" src="./figures/UNA_logo.png"/>
 </p>
 
-# UNA
+# UNA: Unveiling the Impact of Noise Annotation on Object Detection
 
 <p align="center">
  <img width="100%" src="./figures/MainFig.png"/>
