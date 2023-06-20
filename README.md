@@ -90,7 +90,7 @@ $ pip install --upgrade numpy
 ~~~
 
 # 💾 Download UNA dataset
-We provide the download link for the UNA dataset that we used for the experiments. The copyright of the annotations follow the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/legalcode) of the [MS COCO](https://cocodataset.org/#termsofuse) dataset.
+We provide the download link for the UNA dataset that we used for the experiments. The copyright of the annotations follow the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/legalcode) of the [MS COCO](https://cocodataset.org/#termsofuse) dataset.
 
 <center>
 
@@ -120,7 +120,7 @@ Experimental results for various types of detectors on the UNA setting.
 
 </center>
 
-For more detailed setup, please refer to the configuration file.
+For more detailed setup, please refer to the configuration file. For more benchmarks, including the results on PASCAL VOC, please refer to our paper.
 
 # 📄 License
 
