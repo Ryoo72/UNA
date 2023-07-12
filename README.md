@@ -28,7 +28,7 @@ una_inj.py takes following arguments
 - `--ratio` :  Intensity of the synthesized noise.
 - `--class_type` : Select either 'coco' or 'voc'.
 
-> **NOTE** : Currently, una_inj.py only supports the COCO format and VOC format.
+> **NOTE** : Currently, una_inj.py only supports the COCO format and the VOC format.
 
 
 ### COCO Experiments
