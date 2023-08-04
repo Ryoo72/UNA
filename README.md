@@ -123,6 +123,37 @@ Experimental results for various types of detectors on the UNA setting.
 - For more detailed setup, please refer to the configuration file.
 - For more benchmarks, including the results on PASCAL VOC, please refer to our paper.
 
+# 🌲 Repository Structure
+```
+.
+├── LICENSE
+├── README.md
+├── una_inj.sh
+├── una_inj.py
+├── figures
+│   └── figure1,2
+├── tools
+│   ├── VOC_Gen.sh 
+│   ├── coco_download.sh
+│   └── voc_download.sh
+└── experiments
+    ├── faster_rcnn_resnet50
+    │   ├── configs
+    │   │   └── {conf1.py},{conf2.py}...
+    │   └── logs
+    │       └── {log1.log},{log2.log}...      
+    ├── table4
+    │   ├── configs
+    │   │   └── {conf1.py},{conf2.py}...
+    │   └── logs
+    │       └── {log1.log},{log2.log}...      
+    └── table6
+        ├── configs
+        │   └── {conf1.py},{conf2.py}...
+        └── logs
+            └── {log1.log},{log2.log}...      
+```
+
 # 📄 License
 
 Distributed under the MIT License. LICENSE contains more information.
