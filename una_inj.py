@@ -21,6 +21,8 @@ parser.add_argument("-o", "--output", dest="output", type=str, default='UNA',
                     help="output name prefix")
 parser.add_argument("-r", "--ratio", dest="ratio", type=float, default=0.1,
                     help="noise ratio")
+parser.add_argument("-s", "--seed", dest="seed", type=int, default=0,
+                    help="random seed")
 parser.add_argument("-c", "--class_type", dest="type", type=str, default='coco', choices=["coco","voc"],
                     help="class type")
 args = parser.parse_args()
@@ -29,7 +31,10 @@ path = args.path
 target_path = args.target
 output_file = args.output
 noise_ratio = args.ratio
+random_seed = args.seed
 class_type = args.type
+
+base_random_seed = int(random_seed) * 4
 
 output_file = f"{output_file}{int(noise_ratio*100)}.json"
 os.makedirs(args.target, exist_ok=True)
@@ -162,10 +167,10 @@ def make_bogus(anns,noise_ratio, ann_len, random_seed=3):
 
 """### SAVE ###"""
 if __name__ == '__main__':
-    anns = make_missing(anns, noise_ratio, ann_len, random_seed=0)
-    anns = make_loc(anns, noise_ratio, ann_len, random_seed=1)
-    anns = make_class(anns, noise_ratio, ann_len, random_seed=2)
-    anns = make_bogus(anns,noise_ratio, ann_len, random_seed=3)
+    anns = make_missing(anns, noise_ratio, ann_len, random_seed=base_random_seed)
+    anns = make_loc(anns, noise_ratio, ann_len, random_seed=base_random_seed+1)
+    anns = make_class(anns, noise_ratio, ann_len, random_seed=base_random_seed+2)
+    anns = make_bogus(anns,noise_ratio, ann_len, random_seed=base_random_seed+3)
 
 with open(save_path,"w") as outfile:
     json.dump(anns, outfile, indent=4)
