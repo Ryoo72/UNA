@@ -156,7 +156,7 @@ Experimental results for various types of detectors on the UNA setting.
 
 # 📄 License
 
-Distributed under the MIT License. LICENSE contains more information.
+Distributed under the MIT License. [LICENSE](https://github.com/Ryoo72/UNA/blob/main/LICENSE) contains more information.
 
 # ✉️ Contact
 
