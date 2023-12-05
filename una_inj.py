@@ -11,7 +11,7 @@ coco_class = (1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,20,\
               61,62,63,64,65,67,70,72,73,74,75,76,77,78,79,80,\
               81,82,84,85,86,87,88,89,90)
 voc_class = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
-deeplesion_class = (0)
+deeplesion_class = (0,)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--path", dest="path", type=str, default='./data/coco/annotations/instances_train2017.json',
@@ -45,8 +45,8 @@ elif class_type == "deeplesion":
 base_random_seed = int(random_seed) * 4
 
 output_file = f"{output_file}{int(noise_ratio*100)}.json"
-os.makedirs(args.target, exist_ok=True)
-save_path = os.path.join(args.target, output_file)
+os.makedirs(target_path, exist_ok=True)
+save_path = os.path.join(target_path, output_file)
 
 with open(path,"r") as json_file:
     original_anns = json.load(json_file)
