@@ -11,6 +11,7 @@ coco_class = (1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,20,\
               61,62,63,64,65,67,70,72,73,74,75,76,77,78,79,80,\
               81,82,84,85,86,87,88,89,90)
 voc_class = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19)
+deeplesion_class = (0)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-p", "--path", dest="path", type=str, default='./data/coco/annotations/instances_train2017.json',
@@ -23,7 +24,7 @@ parser.add_argument("-r", "--ratio", dest="ratio", type=float, default=0.1,
                     help="noise ratio")
 parser.add_argument("-s", "--seed", dest="seed", type=int, default=0,
                     help="random seed")
-parser.add_argument("-c", "--class_type", dest="type", type=str, default='coco', choices=["coco","voc"],
+parser.add_argument("-c", "--class_type", dest="type", type=str, default='coco', choices=["coco","voc","deeplesion"],
                     help="class type")
 args = parser.parse_args()
 
@@ -33,6 +34,13 @@ output_file = args.output
 noise_ratio = args.ratio
 random_seed = args.seed
 class_type = args.type
+
+if class_type == "coco":
+    class_set = coco_class
+elif class_type == "voc":
+    class_set = voc_class
+elif class_type == "deeplesion":
+    class_set = deeplesion_class
 
 base_random_seed = int(random_seed) * 4
 
@@ -127,7 +135,7 @@ def make_class(anns, noise_ratio, ann_len, random_seed=2):
     noise_idx = idx[:num_noise]
 
     for i in noise_idx:
-        anns["annotations"][i]["category_id"] = random.choice(class_type)
+        anns["annotations"][i]["category_id"] = random.choice(class_set)
         anns["annotations"][i]["n_clf"] = True
         
     return anns
@@ -158,7 +166,7 @@ def make_bogus(anns,noise_ratio, ann_len, random_seed=3):
         iscrowd = 0
         image_id = anns['images'][image_idx]['id']
         bbox = [new_x, new_y, new_w, new_h]
-        category_id = random.choice(class_type)
+        category_id = random.choice(class_set)
         id = max_id_plus_one + i 
         
         anns['annotations'].append({'area': area, 'iscrowd': iscrowd, 'image_id': image_id, 'bbox': bbox, 'category_id': category_id, 'id': id, 'n_loc': True, 'n_clf': True, 'n_bogus': True})
