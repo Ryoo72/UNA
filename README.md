@@ -89,6 +89,9 @@ $ pip install -r requirements.txt
 $ pip install --upgrade numpy
 ~~~
 
+> [!NOTE]
+> Check out [this link](https://github.com/Ryoo72/DeepLesion.git) to use DeepLesion, a large-scale dataset of CT images.
+
 # 💾 Download UNA dataset
 We provide the download link for the UNA dataset that we used for the experiments. The copyright of the annotations follow the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/legalcode) of the [MS COCO](https://cocodataset.org/#termsofuse) dataset.
 
