@@ -2,6 +2,12 @@
  <img width="80%" src="./figures/UNA_logo.png"/>
 </p>
 
+<div align=center>
+
+[![arXiv preprint](https://img.shields.io/badge/arxiv-2312.13822-ECA8A7?logo=arxiv)](https://arxiv.org/abs/2312.13822)
+</div>
+
+
 ## Unveiling the Impact of Noise Annotation on Object Detection
 
 <p align="center">
