@@ -18,7 +18,7 @@ This repository contains the code for generating **U**niversal-**N**oise **A**nn
 
 You can use this code to simulate various types of noise and evaluate the performance of object detection models under different noise settings. It provides a comprehensive framework for studying the impact of noise on object detection algorithms.
 
-This paper was presented as an oral presentation at the [Medical Imaging meets NeurIPS 2023](https://sites.google.com/view/med-neurips2023/program?authuser=0). For more details on the program, please visit their website at Medical Imaging meets NeurIPS 2023.
+> The paper was presented as an oral presentation at the [Medical Imaging meets NeurIPS 2023](https://sites.google.com/view/med-neurips2023/program?authuser=0).
 
 # ⚡️ Quick Start
 
